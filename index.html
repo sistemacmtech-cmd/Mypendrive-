@@ -290,6 +290,90 @@
       margin-top: 15px;
     }
 
+    /* VISUALIZADOR DE FOTO EM TELA CHEIA (LIGHTBOX) */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 15px;
+      z-index: 2000;
+    }
+
+    .lightbox-header {
+      width: 100%;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .lightbox-close {
+      background: rgba(255, 255, 255, 0.2);
+      color: #fff;
+      border: none;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      font-size: 18px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .lightbox-img-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-height: 75vh;
+      margin: 10px 0;
+    }
+
+    .lightbox-img-container img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .lightbox-actions {
+      width: 100%;
+      max-width: 400px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .share-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #2563eb, #1d4ed8);
+      color: #fff;
+      border: none;
+      padding: 12px;
+      border-radius: 10px;
+      font-weight: bold;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      cursor: pointer;
+    }
+
+    .delete-photo-lightbox {
+      background: rgba(239, 68, 68, 0.2);
+      color: #fca5a5;
+      border: 1px solid rgba(239, 68, 68, 0.4);
+      padding: 12px 18px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
     /* TELA PRINCIPAL DO APP */
     .app-screen {
       display: none;
@@ -396,29 +480,13 @@
       background: #1e293b;
       border: 1px solid #334155;
       box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      cursor: pointer;
     }
 
     .photo-card img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-    }
-
-    .delete-btn {
-      position: absolute;
-      top: 6px;
-      right: 6px;
-      background: rgba(0, 0, 0, 0.7);
-      color: #ff4d4d;
-      border: none;
-      width: 26px;
-      height: 26px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      cursor: pointer;
     }
 
     .empty-state {
@@ -465,7 +533,7 @@
     </div>
   </div>
 
-  <!-- MODAL POLÍTICA E TERMOS EXPANDIDOS -->
+  <!-- MODAL POLÍTICA E TERMOS -->
   <div class="modal-overlay" id="policyModal">
     <div class="modal-content">
       <h3>Termos, Leis & Política de Privacidade</h3>
@@ -483,6 +551,29 @@
       <p>Em caso de dúvidas, suporte técnico ou solicitações sobre os termos, entre em contato diretamente com a criadora do aplicativo:<br><strong>E-mail:</strong> sistemacmtech@gmail.com</p>
 
       <button class="close-modal-btn" onclick="closePolicyModal()">Entendido e Concordo</button>
+    </div>
+  </div>
+
+  <!-- LIGHTBOX / VISUALIZADOR DE FOTO EM TELA CHEIA -->
+  <div class="lightbox-overlay" id="lightboxModal">
+    <div class="lightbox-header">
+      <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+    </div>
+    <div class="lightbox-img-container">
+      <img id="lightboxImage" src="" alt="Foto em Tela Cheia">
+    </div>
+    <div class="lightbox-actions">
+      <button class="share-btn" onclick="shareCurrentPhoto()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="18" cy="5" r="3"></circle>
+          <circle cx="6" cy="12" r="3"></circle>
+          <circle cx="18" cy="19" r="3"></circle>
+          <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+          <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+        </svg>
+        Enviar / Compartilhar
+      </button>
+      <button class="delete-photo-lightbox" onclick="deleteCurrentPhoto()">Apagar</button>
     </div>
   </div>
 
@@ -588,7 +679,9 @@
       if (savedUser) showAppScreen(savedUser);
     });
 
-    /* 4. GUARDAR E CARREGAR FOTOS */
+    /* 4. GUARDAR, EXIBIR E COMPARTILHAR FOTOS */
+    let currentPhotoObj = null;
+
     async function handleFileUpload(event) {
       const files = event.target.files;
       if (!files || files.length === 0) return;
@@ -630,19 +723,60 @@
       photos.forEach(photo => {
         const card = document.createElement('div');
         card.className = 'photo-card';
-        card.innerHTML = `
-          <img src="${photo.data}" alt="Foto Guardada">
-          <button class="delete-btn" onclick="deletePhoto(${photo.id})" title="Apagar Foto">✕</button>
-        `;
+        card.onclick = () => openLightbox(photo);
+        card.innerHTML = `<img src="${photo.data}" alt="Foto Guardada">`;
         grid.appendChild(card);
       });
     }
 
-    function deletePhoto(id) {
+    /* LÓGICA DO LIGHTBOX / COMPARTILHAMENTO */
+    function openLightbox(photo) {
+      currentPhotoObj = photo;
+      document.getElementById('lightboxImage').src = photo.data;
+      document.getElementById('lightboxModal').style.display = 'flex';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightboxModal').style.display = 'none';
+      currentPhotoObj = null;
+    }
+
+    async function shareCurrentPhoto() {
+      if (!currentPhotoObj) return;
+
+      try {
+        // Converte base64 para File para envio nativo
+        const res = await fetch(currentPhotoObj.data);
+        const blob = await res.blob();
+        const file = new File([blob], `foto_pendrive_${Date.now()}.jpg`, { type: blob.type });
+
+        if (navigator.canShare && navigator.canShare({ files: [file] })) {
+          await navigator.share({
+            files: [file],
+            title: 'Minha Foto do Pendrive de Memórias',
+            text: 'Enviado pelo Pendrive 2TB de Memórias'
+          });
+        } else {
+          // Fallback se o navegador não apoiar compartilhamento direto de ficheiro
+          const link = document.createElement('a');
+          link.href = currentPhotoObj.data;
+          link.download = `foto_pendrive_${Date.now()}.jpg`;
+          link.click();
+        }
+      } catch (err) {
+        console.error('Erro ao compartilhar:', err);
+      }
+    }
+
+    function deleteCurrentPhoto() {
+      if (!currentPhotoObj) return;
       if (confirm('Deseja realmente apagar esta foto do pendrive?')) {
         const tx = db.transaction(['photos'], 'readwrite');
-        tx.objectStore('photos').delete(id);
-        tx.oncomplete = () => loadSavedPhotos();
+        tx.objectStore('photos').delete(currentPhotoObj.id);
+        tx.oncomplete = () => {
+          closeLightbox();
+          loadSavedPhotos();
+        };
       }
     }
 
