@@ -171,7 +171,7 @@
       margin-bottom: 6px;
     }
 
-    .input-group input {
+    .input-group input, .input-group select {
       width: 100%;
       padding: 12px 14px;
       background: rgba(15, 23, 42, 0.8);
@@ -183,7 +183,7 @@
       transition: border 0.2s;
     }
 
-    .input-group input:focus {
+    .input-group input:focus, .input-group select:focus {
       border-color: #f59e0b;
     }
 
@@ -229,13 +229,10 @@
       padding: 4px;
     }
 
-    /* MODAL POLÍTICA E TERMOS EXPANDIDOS */
+    /* MODAL POLÍTICA E TERMOS */
     .modal-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0, 0, 0, 0.85);
       backdrop-filter: blur(5px);
       display: none;
@@ -290,13 +287,10 @@
       margin-top: 15px;
     }
 
-    /* VISUALIZADOR DE FOTO EM TELA CHEIA (LIGHTBOX) */
+    /* VISUALIZADOR DE FOTO EM TELA CHEIA (LIGHTBOX COM SETAS) */
     .lightbox-overlay {
       position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
+      top: 0; left: 0; right: 0; bottom: 0;
       background: rgba(0, 0, 0, 0.95);
       display: none;
       flex-direction: column;
@@ -324,14 +318,44 @@
       cursor: pointer;
     }
 
+    .lightbox-body {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      max-height: 75vh;
+      margin: 10px 0;
+    }
+
+    .lightbox-nav-btn {
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+      border: none;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      font-size: 20px;
+      font-weight: bold;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2001;
+      transition: background 0.2s;
+    }
+
+    .lightbox-nav-btn:active {
+      background: rgba(255, 255, 255, 0.35);
+    }
+
     .lightbox-img-container {
       flex: 1;
       display: flex;
       align-items: center;
       justify-content: center;
-      width: 100%;
-      max-height: 75vh;
-      margin: 10px 0;
+      height: 100%;
+      padding: 0 10px;
     }
 
     .lightbox-img-container img {
@@ -436,14 +460,49 @@
       transition: width 0.3s ease;
     }
 
+    /* SISTEMA DE PASTAS */
+    .folders-container {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .folder-tab {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid #334155;
+      border-radius: 12px;
+      padding: 12px;
+      text-align: left;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .folder-tab.active {
+      background: rgba(245, 158, 11, 0.15);
+      border-color: #f59e0b;
+    }
+
+    .folder-name {
+      font-size: 13px;
+      font-weight: bold;
+      color: #fef3c7;
+      margin-top: 4px;
+    }
+
+    .folder-count {
+      font-size: 11px;
+      color: #94a3b8;
+    }
+
     .upload-zone {
       border: 2px dashed #f59e0b;
       background: rgba(245, 158, 11, 0.05);
       border-radius: 16px;
-      padding: 25px;
+      padding: 20px;
       text-align: center;
       cursor: pointer;
-      margin-bottom: 25px;
+      margin-bottom: 20px;
       transition: background 0.2s;
     }
 
@@ -452,8 +511,8 @@
     }
 
     .upload-icon {
-      font-size: 32px;
-      margin-bottom: 8px;
+      font-size: 28px;
+      margin-bottom: 6px;
     }
 
     .upload-text {
@@ -559,8 +618,12 @@
     <div class="lightbox-header">
       <button class="lightbox-close" onclick="closeLightbox()">✕</button>
     </div>
-    <div class="lightbox-img-container">
-      <img id="lightboxImage" src="" alt="Foto em Tela Cheia">
+    <div class="lightbox-body">
+      <button class="lightbox-nav-btn" onclick="prevPhoto()">❮</button>
+      <div class="lightbox-img-container">
+        <img id="lightboxImage" src="" alt="Foto em Tela Cheia">
+      </div>
+      <button class="lightbox-nav-btn" onclick="nextPhoto()">❯</button>
     </div>
     <div class="lightbox-actions">
       <button class="share-btn" onclick="shareCurrentPhoto()">
@@ -599,15 +662,39 @@
       </div>
     </div>
 
-    <div class="upload-zone" onclick="document.getElementById('fileInput').click()">
+    <!-- SELETOR DE 4 PASTAS -->
+    <div class="folders-container">
+      <div class="folder-tab active" id="tab-familia" onclick="selectFolder('familia')">
+        <div style="font-size: 18px;">👨‍👩‍👧‍👦</div>
+        <div class="folder-name">Família</div>
+        <div class="folder-count" id="count-familia">0 fotos</div>
+      </div>
+      <div class="folder-tab" id="tab-viagens" onclick="selectFolder('viagens')">
+        <div style="font-size: 18px;">✈️</div>
+        <div class="folder-name">Viagens</div>
+        <div class="folder-count" id="count-viagens">0 fotos</div>
+      </div>
+      <div class="folder-tab" id="tab-momentos" onclick="selectFolder('momentos')">
+        <div style="font-size: 18px;">✨</div>
+        <div class="folder-name">Momentos Especiais</div>
+        <div class="folder-count" id="count-momentos">0 fotos</div>
+      </div>
+      <div class="folder-tab" id="tab-favoritos" onclick="selectFolder('favoritos')">
+        <div style="font-size: 18px;">💖</div>
+        <div class="folder-name">Favoritos</div>
+        <div class="folder-count" id="count-favoritos">0 fotos</div>
+      </div>
+    </div>
+
+    <div class="upload-zone" onclick="promptFolderAndUpload()">
       <div class="upload-icon">📁</div>
-      <div class="upload-text">+ Guardar Fotos no Pendrive</div>
-      <span style="font-size: 11px; color: #94a3b8;">Clique aqui para selecionar fotos do seu aparelho</span>
+      <div class="upload-text">+ Guardar Fotos na Pasta Atual</div>
+      <span style="font-size: 11px; color: #94a3b8;" id="uploadSubtext">Salvando em: Família</span>
       <input type="file" id="fileInput" accept="image/*" multiple onchange="handleFileUpload(event)">
     </div>
 
     <div class="gallery-grid" id="galleryGrid">
-      <div class="empty-state">Nenhuma foto guardada ainda.<br>Adicione suas primeiras memórias acima!</div>
+      <div class="empty-state">Nenhuma foto guardada nesta pasta ainda.<br>Adicione suas primeiras memórias acima!</div>
     </div>
   </div>
 
@@ -615,7 +702,7 @@
     /* 1. SERVICE WORKER & PWA */
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE = 'pendrive-cache-v1';
+        const CACHE = 'pendrive-cache-v2';
         self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./']))));
         self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
       `;
@@ -625,9 +712,13 @@
 
     /* 2. BASE DE DADOS LOCAL (IndexedDB) */
     let db;
+    let currentFolder = 'familia';
+    let allPhotosCache = [];
+    let currentIndex = 0;
+
     function initDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open("Pendrive2TBDB", 1);
+        const req = indexedDB.open("Pendrive2TBDB", 2);
         req.onupgradeneeded = (e) => {
           db = e.target.result;
           if (!db.objectStoreNames.contains('photos')) {
@@ -671,16 +762,54 @@
       localStorage.removeItem('pendrive_user');
       document.getElementById('appScreen').style.display = 'none';
       document.getElementById('coverScreen').style.display = 'flex';
+      document.getElementById('email').value = '';
+      document.getElementById('password').value = '';
     }
 
     window.addEventListener('DOMContentLoaded', async () => {
       await initDB();
       const savedUser = localStorage.getItem('pendrive_user');
-      if (savedUser) showAppScreen(savedUser);
+      if (savedUser) {
+        showAppScreen(savedUser);
+      }
     });
 
-    /* 4. GUARDAR, EXIBIR E COMPARTILHAR FOTOS */
-    let currentPhotoObj = null;
+    /* 4. PASTAS E UPLOAD */
+    function selectFolder(folderKey) {
+      currentFolder = folderKey;
+      document.querySelectorAll('.folder-tab').forEach(tab => tab.classList.remove('active'));
+      document.getElementById(`tab-${folderKey}`).classList.add('active');
+
+      const folderNames = {
+        'familia': 'Família',
+        'viagens': 'Viagens',
+        'momentos': 'Momentos Especiais',
+        'favoritos': 'Favoritos'
+      };
+      document.getElementById('uploadSubtext').textContent = `Salvando em: ${folderNames[folderKey]}`;
+      renderFilteredGallery();
+    }
+
+    function promptFolderAndUpload() {
+      const folderNames = {
+        'familia': 'Família',
+        'viagens': 'Viagens',
+        'momentos': 'Momentos Especiais',
+        'favoritos': 'Favoritos'
+      };
+      const escolha = prompt(`Escolha a pasta de destino para as fotos:\n\n1 - Família\n2 - Viagens\n3 - Momentos Especiais\n4 - Favoritos\n\n(Digite o número ou nome da pasta, ou cancele para usar a pasta atual: "${folderNames[currentFolder]}")`);
+      
+      if (escolha !== null) {
+        const val = escolha.trim().toLowerCase();
+        if (val === '1' || val.includes('fam')) currentFolder = 'familia';
+        else if (val === '2' || val.includes('viag')) currentFolder = 'viagens';
+        else if (val === '3' || val.includes('momen')) currentFolder = 'momentos';
+        else if (val === '4' || val.includes('favor')) currentFolder = 'favoritos';
+        
+        selectFolder(currentFolder);
+      }
+      document.getElementById('fileInput').click();
+    }
 
     async function handleFileUpload(event) {
       const files = event.target.files;
@@ -693,60 +822,96 @@
           tx.objectStore('photos').add({
             data: e.target.result,
             size: file.size,
+            folder: currentFolder,
             timestamp: Date.now()
           });
           tx.oncomplete = () => loadSavedPhotos();
         };
         reader.readAsDataURL(file);
       }
+      event.target.value = '';
     }
 
     function loadSavedPhotos() {
       const tx = db.transaction(['photos'], 'readonly');
       const req = tx.objectStore('photos').getAll();
       req.onsuccess = () => {
-        const photos = req.result;
-        renderGallery(photos);
-        calculateStorageUsage(photos);
+        allPhotosCache = req.result;
+        updateFolderCounters(allPhotosCache);
+        renderFilteredGallery();
+        calculateStorageUsage(allPhotosCache);
       };
     }
 
-    function renderGallery(photos) {
+    function updateFolderCounters(photos) {
+      const counts = { familia: 0, viagens: 0, momentos: 0, favoritos: 0 };
+      photos.forEach(p => {
+        const f = p.folder || 'familia';
+        if (counts[f] !== undefined) counts[f]++;
+      });
+      for (let k in counts) {
+        document.getElementById(`count-${k}`).textContent = `${counts[k]} fotos`;
+      }
+    }
+
+    function renderFilteredGallery() {
       const grid = document.getElementById('galleryGrid');
       grid.innerHTML = '';
 
-      if (photos.length === 0) {
-        grid.innerHTML = `<div class="empty-state">Nenhuma foto guardada ainda.<br>Adicione suas primeiras memórias acima!</div>`;
+      const filtered = allPhotosCache.filter(p => (p.folder || 'familia') === currentFolder);
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `<div class="empty-state">Nenhuma foto guardada nesta pasta ainda.<br>Adicione suas primeiras memórias acima!</div>`;
         return;
       }
 
-      photos.forEach(photo => {
+      filtered.forEach((photo, index) => {
         const card = document.createElement('div');
         card.className = 'photo-card';
-        card.onclick = () => openLightbox(photo);
+        card.onclick = () => openLightbox(filtered, index);
         card.innerHTML = `<img src="${photo.data}" alt="Foto Guardada">`;
         grid.appendChild(card);
       });
     }
 
-    /* LÓGICA DO LIGHTBOX / COMPARTILHAMENTO */
-    function openLightbox(photo) {
-      currentPhotoObj = photo;
-      document.getElementById('lightboxImage').src = photo.data;
+    /* LIGHTBOX & NAVEGAÇÃO */
+    let currentFilteredList = [];
+
+    function openLightbox(list, index) {
+      currentFilteredList = list;
+      currentIndex = index;
+      updateLightboxImage();
       document.getElementById('lightboxModal').style.display = 'flex';
+    }
+
+    function updateLightboxImage() {
+      if (currentFilteredList.length === 0) return;
+      document.getElementById('lightboxImage').src = currentFilteredList[currentIndex].data;
+    }
+
+    function nextPhoto() {
+      if (currentFilteredList.length === 0) return;
+      currentIndex = (currentIndex + 1) % currentFilteredList.length;
+      updateLightboxImage();
+    }
+
+    function prevPhoto() {
+      if (currentFilteredList.length === 0) return;
+      currentIndex = (currentIndex - 1 + currentFilteredList.length) % currentFilteredList.length;
+      updateLightboxImage();
     }
 
     function closeLightbox() {
       document.getElementById('lightboxModal').style.display = 'none';
-      currentPhotoObj = null;
+      currentFilteredList = [];
     }
 
     async function shareCurrentPhoto() {
-      if (!currentPhotoObj) return;
+      const photoObj = currentFilteredList[currentIndex];
+      if (!photoObj) return;
 
       try {
-        // Converte base64 para File para envio nativo
-        const res = await fetch(currentPhotoObj.data);
+        const res = await fetch(photoObj.data);
         const blob = await res.blob();
         const file = new File([blob], `foto_pendrive_${Date.now()}.jpg`, { type: blob.type });
 
@@ -757,9 +922,8 @@
             text: 'Enviado pelo Pendrive 2TB de Memórias'
           });
         } else {
-          // Fallback se o navegador não apoiar compartilhamento direto de ficheiro
           const link = document.createElement('a');
-          link.href = currentPhotoObj.data;
+          link.href = photoObj.data;
           link.download = `foto_pendrive_${Date.now()}.jpg`;
           link.click();
         }
@@ -769,10 +933,11 @@
     }
 
     function deleteCurrentPhoto() {
-      if (!currentPhotoObj) return;
+      const photoObj = currentFilteredList[currentIndex];
+      if (!photoObj) return;
       if (confirm('Deseja realmente apagar esta foto do pendrive?')) {
         const tx = db.transaction(['photos'], 'readwrite');
-        tx.objectStore('photos').delete(currentPhotoObj.id);
+        tx.objectStore('photos').delete(photoObj.id);
         tx.oncomplete = () => {
           closeLightbox();
           loadSavedPhotos();
