@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Pendrive 2 Terabytes - Pendrive de Memórias</title>
+  <title>Pendrive 1000 Terabytes - Pendrive de Memórias</title>
 
   <!-- PWA & Mobile Web App Meta Tags -->
   <meta name="theme-color" content="#131722">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <meta name="apple-mobile-web-app-title" content="Pendrive 2TB">
+  <meta name="apple-mobile-web-app-title" content="Pendrive 1000TB">
   <link rel="apple-touch-icon" href="https://img.icons8.com/fluency/192/usb-memory-stick.png">
 
   <!-- Manifest PWA Embutido (Data URI) -->
-  <link rel="manifest" href='data:application/manifest+json,{"name":"Pendrive 2 Terabytes","short_name":"Pendrive2TB","start_url":"./","display":"standalone","background_color":"#11141c","theme_color":"#131722","icons":[{"src":"https://img.icons8.com/fluency/192/usb-memory-stick.png","sizes":"192x192","type":"image/png"},{"src":"https://img.icons8.com/fluency/512/usb-memory-stick.png","sizes":"512x512","type":"image/png"}]}'>
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Pendrive 1000 Terabytes","short_name":"Pendrive1000TB","start_url":"./","display":"standalone","background_color":"#11141c","theme_color":"#131722","icons":[{"src":"https://img.icons8.com/fluency/192/usb-memory-stick.png","sizes":"192x192","type":"image/png"},{"src":"https://img.icons8.com/fluency/512/usb-memory-stick.png","sizes":"512x512","type":"image/png"}]}'>
 
   <style>
     * {
@@ -97,9 +97,9 @@
 
     .pendrive-title {
       color: #fff;
-      font-size: 13px;
+      font-size: 11px;
       font-weight: 800;
-      letter-spacing: 1.5px;
+      letter-spacing: 1px;
       margin-top: 8px;
       text-shadow: 0 1px 2px rgba(0,0,0,0.4);
     }
@@ -662,7 +662,7 @@
     
     <div class="pendrive-card">
       <div class="heart-icon">♥</div>
-      <div class="pendrive-title">PENDRIVE 2 TB</div>
+      <div class="pendrive-title">PENDRIVE 1000 TB</div>
       <div class="family-badge">
         <svg class="family-icon" viewBox="0 0 24 24">
           <path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/>
@@ -697,7 +697,7 @@
       <h3>Termos, Leis & Política de Privacidade</h3>
       
       <h4>1. Sobre o Serviço</h4>
-      <p>O aplicativo **Pendrive de Memórias 2TB** oferece um espaço seguro e independente para armazenamento local de fotografias, simulando uma capacidade robusta de 2 Terabytes no seu dispositivo.</p>
+      <p>O aplicativo **Pendrive de Memórias 1000TB** oferece um espaço seguro e independente para armazenamento local de fotografias, simulando uma capacidade robusta de 1.000 Terabytes no seu dispositivo.</p>
       
       <h4>2. Proteção e Segurança de Dados (LGPD)</h4>
       <p>Em total conformidade com as leis de proteção de dados, as imagens enviadas ficam armazenadas de forma nativa e privada no banco de dados do próprio navegador (IndexedDB), garantindo que suas memórias não sejam perdidas ao fechar o app.</p>
@@ -747,7 +747,7 @@
       <div class="storage-box">
         <div class="storage-info">
           <span>Armazenamento do Pendrive</span>
-          <span id="storageUsage">0 MB / 2 TB</span>
+          <span id="storageUsage">0 MB / 1000 TB</span>
         </div>
         <div class="storage-bar-bg">
           <div class="storage-bar-fill" id="storageBar"></div>
@@ -811,7 +811,7 @@
     /* 1. SERVICE WORKER & PWA */
     if ('serviceWorker' in navigator) {
       const swCode = `
-        const CACHE = 'pendrive-cache-v4';
+        const CACHE = 'pendrive-cache-v1000';
         self.addEventListener('install', e => e.waitUntil(caches.open(CACHE).then(c => c.addAll(['./']))));
         self.addEventListener('fetch', e => e.respondWith(caches.match(e.request).then(r => r || fetch(e.request))));
       `;
@@ -829,7 +829,7 @@
 
     function initDB() {
       return new Promise((resolve, reject) => {
-        const req = indexedDB.open("Pendrive2TBDB", 2);
+        const req = indexedDB.open("Pendrive1000TBDB", 2);
         req.onupgradeneeded = (e) => {
           db = e.target.result;
           if (!db.objectStoreNames.contains('photos')) {
@@ -887,7 +887,7 @@
 
     /* 4. PASTAS E UPLOAD */
     function selectFolder(folderKey) {
-      if (isMultiSelectMode) toggleSelectMode(); // Sai do modo múltiplo ao trocar de pasta
+      if (isMultiSelectMode) toggleSelectMode();
       currentFolder = folderKey;
       document.querySelectorAll('.folder-tab').forEach(tab => tab.classList.remove('active'));
       document.getElementById(`tab-${folderKey}`).classList.add('active');
@@ -1076,19 +1076,12 @@
       }
     }
 
-    /* AÇÕES EM LOTE (MÚLTIPLAS FOTOS) */
+    /* AÇÕES EM LOTE */
     function batchMove() {
       if (selectedPhotoIds.size === 0) {
         alert('Selecione pelo menos uma foto.');
         return;
       }
-
-      const folderNames = {
-        'familia': '👨‍👩‍👧‍👦 Família',
-        'viagens': '✈️ Viagens',
-        'momentos': '✨ Momentos Especiais',
-        'favoritos': '💖 Favoritos'
-      };
 
       let opcoes = `Mover ${selectedPhotoIds.size} foto(s) para qual pasta?\n\n1 - Família\n2 - Viagens\n3 - Momentos Especiais\n4 - Favoritos\n\nDigite o número:`;
       const escolha = prompt(opcoes);
@@ -1177,7 +1170,7 @@
           await navigator.share({
             files: [file],
             title: 'Minha Foto do Pendrive de Memórias',
-            text: 'Enviado pelo Pendrive 2TB de Memórias'
+            text: 'Enviado pelo Pendrive 1000TB de Memórias'
           });
         } else {
           const link = document.createElement('a');
@@ -1203,18 +1196,27 @@
       }
     }
 
+    /* CÁLCULO DE ARMAZENAMENTO PARA 1.000 TB */
     function calculateStorageUsage(photos) {
       let totalBytes = 0;
       photos.forEach(p => totalBytes += (p.size || 0));
 
       const totalMB = (totalBytes / (1024 * 1024)).toFixed(2);
-      let usageText = `${totalMB} MB / 2 TB`;
-      if (totalMB > 1024) {
-        usageText = `${(totalMB / 1024).toFixed(2)} GB / 2 TB`;
+      const totalGB = totalMB / 1024;
+      const totalTB = totalGB / 1024;
+
+      let usageText = `${totalMB} MB / 1000 TB`;
+      if (totalTB >= 1) {
+        usageText = `${totalTB.toFixed(2)} TB / 1000 TB`;
+      } else if (totalGB >= 1) {
+        usageText = `${totalGB.toFixed(2)} GB / 1000 TB`;
       }
       
       document.getElementById('storageUsage').textContent = usageText;
-      const percentage = Math.max(0.1, (totalMB / 2097152) * 100);
+      
+      // 1.000 Terabytes em Megabytes = 1.048.576.000 MB
+      const maxMB = 1048576000; 
+      const percentage = Math.max(0.1, (totalMB / maxMB) * 100);
       document.getElementById('storageBar').style.width = `${percentage}%`;
     }
   </script>
